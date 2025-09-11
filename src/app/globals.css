@@ -11,6 +11,8 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
+  --animate-scroll: scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite;
+  
 }
 
 @media (prefers-color-scheme: dark) {
@@ -29,6 +31,12 @@
     opacity: 1;
     transform: translate(-50%, -40%) scale(1);
   }
+}
+
+@keyframes scroll {
+    to {
+      transform: translate(calc(-50% - 0.5rem));
+    }
 }
 
 body {
