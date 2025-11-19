@@ -41,7 +41,7 @@ export function Button<T extends React.ElementType = "button">(
       style={{
         borderRadius: borderRadius,
       }}
-      {...(otherProps as React.ComponentPropsWithoutRef<any>)}
+      {...(otherProps as Omit<React.ComponentPropsWithoutRef<T>, "as" | "children">)}
     >
       <div
         className="absolute inset-0"
