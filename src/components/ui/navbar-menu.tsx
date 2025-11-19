@@ -107,10 +107,14 @@ export const ProductItem = ({
   );
 };
 
-export const HoveredLink = ({ children, ...rest }: any) => {
+export const HoveredLink = (
+  { children, ...rest }: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+    children?: React.ReactNode;
+  }
+) => {
   return (
     <a
-      {...rest}
+      {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
       className="text-gray-700 hover:text-gray-900 transition-colors duration-200"
     >
       {children}

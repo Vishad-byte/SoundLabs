@@ -95,19 +95,7 @@ export const CardBody = ({
   );
 };
 
-export const CardItem = ({
-  as: Tag = "div",
-  children,
-  className,
-  translateX = 0,
-  translateY = 0,
-  translateZ = 0,
-  rotateX = 0,
-  rotateY = 0,
-  rotateZ = 0,
-  ...rest
-}: {
-  as?: React.ElementType;
+type CardItemBaseProps = {
   children: React.ReactNode;
   className?: string;
   translateX?: number | string;
@@ -116,32 +104,59 @@ export const CardItem = ({
   rotateX?: number | string;
   rotateY?: number | string;
   rotateZ?: number | string;
-  [key: string]: any;
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
+};
+
+export const CardItem = <T extends React.ElementType = "div">(
+  props: (CardItemBaseProps & { as?: T }) & Omit<React.ComponentPropsWithoutRef<T>, keyof CardItemBaseProps | "as">,
+) => {
+  const {
+    as,
+    children,
+    className,
+    translateX = 0,
+    translateY = 0,
+    translateZ = 0,
+    rotateX = 0,
+    rotateY = 0,
+    rotateZ = 0,
+    ...rest
+  } = props as CardItemBaseProps & { as?: React.ElementType } & Record<string, unknown>;
+
+  const Tag: React.ElementType = as || "div";
+  const ref = useRef<HTMLElement | null>(null);
   const [isMouseEntered] = useMouseEnter();
 
   useEffect(() => {
     handleAnimations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMouseEntered]);
+
+  const valueWithUnit = (v: number | string, unit: string) =>
+    typeof v === "number" ? `${v}${unit}` : `${v}`;
 
   const handleAnimations = () => {
     if (!ref.current) return;
     if (isMouseEntered) {
-      ref.current.style.transform = `translateX(${translateX}px) translateY(${translateY}px) translateZ(${translateZ}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg)`;
+      const tx = valueWithUnit(translateX, "px");
+      const ty = valueWithUnit(translateY, "px");
+      const tz = valueWithUnit(translateZ, "px");
+      const rx = valueWithUnit(rotateX, "deg");
+      const ry = valueWithUnit(rotateY, "deg");
+      const rz = valueWithUnit(rotateZ, "deg");
+      ref.current.style.transform = `translateX(${tx}) translateY(${ty}) translateZ(${tz}) rotateX(${rx}) rotateY(${ry}) rotateZ(${rz})`;
     } else {
       ref.current.style.transform = `translateX(0px) translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)`;
     }
   };
 
-  return (
-    <Tag
-      ref={ref}
-      className={cn("w-fit transition duration-200 ease-linear", className)}
-      {...rest}
-    >
-      {children}
-    </Tag>
+  return React.createElement(
+    Tag,
+    {
+      ref,
+      className: cn("w-fit transition duration-200 ease-linear", className),
+      ...(rest as Record<string, unknown>),
+    },
+    children
   );
 };
 

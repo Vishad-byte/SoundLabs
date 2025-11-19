@@ -10,27 +10,30 @@ import {
 } from "motion/react";
 import { cn } from "@/utils/cn";
 
-export function Button({
-  borderRadius = "1.75rem",
-  children,
-  as: Component = "button",
-  containerClassName,
-  borderClassName,
-  duration,
-  className,
-  ...otherProps
-}: {
-  borderRadius?: string;
-  children: React.ReactNode;
-  as?: any;
-  containerClassName?: string;
-  borderClassName?: string;
-  duration?: number;
-  className?: string;
-  [key: string]: any;
-}) {
+export function Button<T extends React.ElementType = "button">(
+  {
+    borderRadius = "1.75rem",
+    children,
+    as: Component,
+    containerClassName,
+    borderClassName,
+    duration,
+    className,
+    ...otherProps
+  }: {
+    borderRadius?: string;
+    children: React.ReactNode;
+    as?: T;
+    containerClassName?: string;
+    borderClassName?: string;
+    duration?: number;
+    className?: string;
+  } & Omit<React.ComponentPropsWithoutRef<T>, "as" | "children">,
+) {
+  const ComponentToRender: React.ElementType = (Component || "button") as React.ElementType;
+
   return (
-    <Component
+    <ComponentToRender
       className={cn(
         "relative h-16 w-40 overflow-hidden bg-transparent p-[1px] text-xl",
         containerClassName,
@@ -38,7 +41,7 @@ export function Button({
       style={{
         borderRadius: borderRadius,
       }}
-      {...otherProps}
+      {...(otherProps as React.ComponentPropsWithoutRef<any>)}
     >
       <div
         className="absolute inset-0"
@@ -65,7 +68,7 @@ export function Button({
       >
         {children}
       </div>
-    </Component>
+    </ComponentToRender>
   );
 }
 
@@ -80,8 +83,7 @@ export const MovingBorder = ({
   duration?: number;
   rx?: string;
   ry?: string;
-  [key: string]: any;
-}) => {
+} & React.SVGProps<SVGSVGElement>) => {
   const pathRef = useRef<SVGRectElement | null>(null);
   const progress = useMotionValue<number>(0);
 
